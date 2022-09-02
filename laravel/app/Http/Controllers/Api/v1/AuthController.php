@@ -15,7 +15,7 @@ use App\Services\v1\PhoneConfirmationService;
 
 class AuthController extends ApiController
 {
-    private AuthService $authService;
+    private  $authService;
 
     public function __construct() {
         $this->authService = new AuthService();

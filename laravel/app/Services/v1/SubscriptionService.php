@@ -8,7 +8,7 @@ use App\Services\BaseService;
 
 class SubscriptionService extends BaseService
 {
-    private SubscriptionRepo $subscriptionRepo;
+    private  $subscriptionRepo;
 
     public function __construct() {
         $this->subscriptionRepo = new SubscriptionRepo();

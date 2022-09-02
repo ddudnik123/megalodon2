@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class InvoiceController extends ApiController
 {
-    protected InvoiceService $service;
+    protected $service;
 
     public function __construct() {
         $this->service = new InvoiceService();

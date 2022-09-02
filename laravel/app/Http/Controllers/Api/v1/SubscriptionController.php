@@ -8,7 +8,7 @@ use App\Services\v1\SubscriptionService;
 
 class SubscriptionController extends ApiController
 {
-    private SubscriptionService $service;
+    private $service;
 
     public function __construct() {
         $this->service = new SubscriptionService();

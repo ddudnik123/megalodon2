@@ -150,7 +150,6 @@ class InvoiceService extends BaseService
             'pg_payment_id' => $transaction_id,
             'pg_salt' => Str::random(16),
         ];
-
         //generate a signature and add it to the array
         ksort($request); //sort alphabetically
         array_unshift($request, 'get_status2.php');
