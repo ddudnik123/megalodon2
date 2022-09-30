@@ -4,6 +4,7 @@ namespace App\Services\v1;
 
 use App\Events\ExecutorRatedEvent;
 use App\Http\Requests\Order\CommentOrderRequest;
+use App\Models\ChatUser;
 use App\Models\Executor;
 use App\Models\Order;
 use App\Models\OrderOffer;
@@ -16,6 +17,7 @@ use App\Repositories\ExecutorRepo;
 use App\Repositories\OrderOfferRepo;
 use App\Repositories\OrderRepo;
 use App\Services\BaseService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class OrderService extends BaseService
@@ -322,10 +324,19 @@ class OrderService extends BaseService
         if (is_null($orderOffer)) {
             return $this->errNotAcceptable('Исполнитель не отправлял вам предожение на этот заказ');
         }
+        $user = Auth::user();
+        $chat = ChatUser::where('user_id', $user->id)
+            ->pluck('chat_id')
+            ->toArray();
+
+        if($chat){
+            return $this->errFobidden('Чат уже создан');
+        }
+
 
         $chat = $order->chatable()->create([]);
         $chat->members()->attach([$user->id => ['chat_id' => $chat->id], $executor->user_id => ['chat_id' => $chat->id]]);
 
-        return $this->ok();
+        return $this->result(['chatId' => $chat->id]);
     }
 }
