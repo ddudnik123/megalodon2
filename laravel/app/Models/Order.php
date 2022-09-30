@@ -22,6 +22,12 @@ class Order extends Model
         return $this->morphMany(MediaFiles::class, 'mediable');
     }
 
+    public function chats()
+    {
+        return $this->hasMany(Chat::class);
+
+    }
+
     public function chatable()
     {
         return $this->morphOne(Chat::class, 'chatable');

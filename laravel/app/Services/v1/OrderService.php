@@ -4,6 +4,7 @@ namespace App\Services\v1;
 
 use App\Events\ExecutorRatedEvent;
 use App\Http\Requests\Order\CommentOrderRequest;
+use App\Models\Chat;
 use App\Models\ChatUser;
 use App\Models\Executor;
 use App\Models\Order;
@@ -12,6 +13,7 @@ use App\Models\User;
 use App\Presenters\v1\ExecutorPresenter;
 use App\Presenters\v1\OfferPresenter;
 use App\Presenters\v1\OrderPresenter;
+use App\Repositories\ChatRepo;
 use App\Repositories\CommentRepo;
 use App\Repositories\ExecutorRepo;
 use App\Repositories\OrderOfferRepo;
@@ -26,6 +28,7 @@ class OrderService extends BaseService
 
     public function __construct() {
         $this->orderRepo = new OrderRepo();
+        $this->chatRepo = new ChatRepo();
     }
 
     public function create(User $user, $data)
@@ -325,16 +328,23 @@ class OrderService extends BaseService
             return $this->errNotAcceptable('Исполнитель не отправлял вам предожение на этот заказ');
         }
         $user = Auth::user();
-        $chat = ChatUser::where('user_id', $user->id)
-            ->pluck('chat_id')
-            ->toArray();
+        $chats = $order->chats()->get();
+        $userChats = ChatUser::where('user_id', $user->id)->get();
+       // return $this->result([$userChats]);
+        foreach ($chats as $chat)
+        {
+            foreach ($userChats as $userChat)
+            {
+                if ($userChat->id == $chat->id)
+                {
+                    return $this->errNotAcceptable('Чат уже создан');
+                }
+            }
 
-        if($chat){
-            return $this->errFobidden('Чат уже создан');
         }
 
 
-        $chat = $order->chatable()->create([]);
+        $chat = $order->chatable()->create(['order_id' => $order->id]);
         $chat->members()->attach([$user->id => ['chat_id' => $chat->id], $executor->user_id => ['chat_id' => $chat->id]]);
 
         return $this->result(['chatId' => $chat->id]);

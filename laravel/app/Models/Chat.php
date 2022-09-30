@@ -9,13 +9,17 @@ class Chat extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $guarded = [];
 
     public function chatable()
     {
         return $this->morphTo('chatable');
     }
 
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
     public function members()
     {
         return $this->belongsToMany(User::class, 'chat_users', 'chat_id', 'user_id');
