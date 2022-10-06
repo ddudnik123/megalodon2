@@ -337,7 +337,9 @@ class OrderService extends BaseService
             {
                 if ($userChat->id == $chat->id)
                 {
-                    return $this->errNotAcceptable('Чат уже создан');
+                    return $this->result([
+                        'chatId' => $chat->id,
+                    ]);
                 }
             }
 
